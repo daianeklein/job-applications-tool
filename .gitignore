@@ -172,3 +172,7 @@ cython_debug/
 
 #config file
 .DS_Store
+
+#keys
+g.json
+h.json

@@ -8,7 +8,19 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 pandas = "^2.2.3"
+openai = "^1.65.1"
+dotenv = "^0.9.9"
+langchain-community = "^0.3.18"
+langchain = "^0.3.19"
+google-auth = "^2.38.0"
+google-auth-oauthlib = "^1.2.1"
+google-auth-httplib2 = "^0.2.0"
+google-api-python-client = "^2.162.0"
 
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.1.1"
+notebook = "^7.3.2"
 
 [build-system]
 requires = ["poetry-core"]

@@ -12,12 +12,11 @@ prompts_dir = parent_dir / "prompts"
 sys.path.insert(0, str(prompts_dir))
 
 from prompt_extract_keywords import p_extract_keywords
-from prompt_update_resume import update_resume_p
+from prompt_update_job_title import update_job_title_p
 from job_description import job_description_text
 
 from get_cv_template import fetch_cv_text
 from extract_description_keywords import extract_keywords
-
 
 #### OPEN AI API KEY
 load_dotenv()
@@ -28,10 +27,33 @@ if not OPENAI_API_KEY:
 
 llm = ChatOpenAI(model_name='gpt-4o', openai_api_key=OPENAI_API_KEY)
 
+#### extract the job title
+def fetch_job_title():
+    """Fetches the job title from the CV document in Google Docs."""
+    doc = service.documents().get(documentId=DOCUMENT_ID).execute()
+    
+    content = doc.get("body", {}).get("content", [])
+    
+    job_title = None
+    paragraph_count = 0  # Track which paragraph we're processing
+
+    for element in content:
+        if "paragraph" in element:
+            paragraph_count += 1  # Increment for each paragraph
+            
+            # The second paragraph should be the job title
+            if paragraph_count == 2:
+                for paragraph_element in element["paragraph"]["elements"]:
+                    if "textRun" in paragraph_element:
+                        job_title = paragraph_element["textRun"]["content"].strip()
+                break  # Stop after finding the second paragraph
+
+    return job_title
+
 ### update resume functions
-def update_resume_with_keywords(keywords:str, resume:str) -> str:
+def update_job_title(keywords:str, resume:str) -> str:
     messages = [
-        SystemMessage(content=update_resume_p),
+        SystemMessage(content=update_job_title_p),
         HumanMessage(content=keywords),
         HumanMessage(content=resume)
     ]

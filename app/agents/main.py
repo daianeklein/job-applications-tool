@@ -16,6 +16,7 @@ sys.path.insert(0, str(prompts_dir))
 from prompt_extract_keywords import p_extract_keywords
 from job_description import job_description_text
 from prompt_update_job_title import update_job_title_p
+from prompt_update_profile_summary import update_profile_summary_p
 
 ########### GOOGLE API 
 from google.oauth2 import service_account
@@ -76,37 +77,6 @@ def extract_keywords(prompt: str, job_description:str) -> str:
 ############################################################################
 
 ############################ JOB TITLE ############################
-# def copy_document(original_doc_id: str, new_title: str) -> str:
-#     """Creates a copy of the given Google Docs file with a new title and grants access to the user's personal account."""
-#     copied_file = {'name': new_title}
-
-#     copied_doc = drive_service.files().copy(fileId=original_doc_id, body=copied_file).execute()
-
-#     if 'id' in copied_doc:
-#         new_doc_id = copied_doc['id']
-#         print(f"New document created successfully: https://docs.google.com/document/d/{new_doc_id}/edit")
-
-#         # Grant personal Google account access
-#         permission = {
-#             "type": "user",
-#             "role": "writer", 
-#             "emailAddress": "daiane.klein22@gmail.com"
-#         }
-#         drive_service.permissions().create(
-#             fileId=new_doc_id,
-#             body=permission,
-#             sendNotificationEmail=True,  # Sends an email notification to your personal account
-#             fields="id"
-#         ).execute()
-
-#         return new_doc_id
-#     else:
-#         raise ValueError("Failed to create a copy of the document.")
-
-
-############################################################################
-
-############################ JOB TITLE ############################
 
 def fetch_job_title(doc:str) -> str:
     """Fetches the job title from the CV document in Google Docs."""    
@@ -139,14 +109,7 @@ def update_job_title(keywords:str, job_title:str) -> str:
     return response.content.strip()
 
 
-def update_resume_new_title():
-    # New Job Title
-    NEW_TITLE = "Lead Data Scientist"
-
-    # Find the start and end index of the existing job title
-    EXISTING_TITLE = "Senior Data Analyst | Analytics Engineer"
-
-
+def update_resume_new_title(new_title: str, existing_title: str):
     # Find the position of the job title
     start_index = None
     end_index = None
@@ -156,7 +119,7 @@ def update_resume_new_title():
             for paragraph_element in element["paragraph"]["elements"]:
                 if "textRun" in paragraph_element:
                     text = paragraph_element["textRun"]["content"]
-                    if EXISTING_TITLE in text:
+                    if existing_title in text:
                         start_index = paragraph_element["startIndex"]
                         end_index = paragraph_element["endIndex"]
                         break
@@ -167,10 +130,10 @@ def update_resume_new_title():
             {
                 "replaceAllText": {
                     "containsText": {
-                        "text": EXISTING_TITLE,
+                        "text": existing_title,
                         "matchCase": True
                     },
-                    "replaceText": NEW_TITLE
+                    "replaceText": new_title
                 }
             }
         ]
@@ -178,32 +141,127 @@ def update_resume_new_title():
         # Send update request
         service.documents().batchUpdate(documentId=UPDATED_DOC_ID, body={"requests": requests}).execute()
 
-        print(f"Job title updated to: {NEW_TITLE}")
+        print(f"Job title updated to: {new_title}")
     else:
         print("Existing job title not found in the document.")
+
+############################################################################
+
+############################ PROFILE SUMMARY ############################
+
+def fetch_profile_summary(doc:str) -> str:
+    """Fetches the profile summary from the CV document in Google Docs."""    
+    content = doc.get("body", {}).get("content", [])
+    
+    profile_summary = None
+    paragraph_count = 0  # Track which paragraph we're processing
+
+    for element in content:
+        if "paragraph" in element:
+            paragraph_count += 1  # Increment for each paragraph
+            
+            if paragraph_count == 6:
+                for paragraph_element in element["paragraph"]["elements"]:
+                    if "textRun" in paragraph_element:
+                        if paragraph_element["textRun"]["content"]:
+                            profile_summary = paragraph_element["textRun"]["content"]
+                            break
+
+    return profile_summary
+
+def get_profile_summary_llm(keywords:str, profile_summary:str) -> str:
+    messages = [
+        SystemMessage(content=update_profile_summary_p),
+        HumanMessage(content=keywords),
+        HumanMessage(content=profile_summary)
+    ]
+
+    response = llm.invoke(messages)
+    return response.content.strip()
+
 
 
 ############################################################################
 
 
+def update_resume_text(existing_text: str, new_text: str, document_id: str, service):
+    """
+    Updates any text in the Google Docs document.
+
+    Args:
+        existing_text (str): The text to be replaced.
+        new_text (str): The new text to replace the existing one.
+        document_id (str): The ID of the Google Docs document.
+        service: The Google Docs API service instance.
+    """
+    # Retrieve the document
+    doc = service.documents().get(documentId=document_id).execute()
+
+    # Check if the existing text is in the document
+    found = False
+    for element in doc.get("body", {}).get("content", []):
+        if "paragraph" in element:
+            for paragraph_element in element["paragraph"]["elements"]:
+                if "textRun" in paragraph_element:
+                    text = paragraph_element["textRun"]["content"]
+                    if existing_text in text:
+                        found = True
+                        break
+    
+    # If found, create the request
+    if found:
+        requests = [
+            {
+                "replaceAllText": {
+                    "containsText": {
+                        "text": existing_text,
+                        "matchCase": True
+                    },
+                    "replaceText": new_text
+                }
+            }
+        ]
+
+        # Send update request
+        service.documents().batchUpdate(
+            documentId=document_id, body={"requests": requests}
+        ).execute()
+
+        print("Text Updated")
+    else:
+        print(f"Text '{existing_text}' not found in the document.")
+
+
+
+############################################################################
+
 if __name__ == '__main__':
-    # print('Keywords are: ')
-    # keywords = extract_keywords(p_extract_keywords, job_description_text)
-    # print(f'{keywords}\n\n')
+    # Extract keywords from job description
+    keywords = extract_keywords(p_extract_keywords, job_description_text)
+    
+    # Fetch necessary sections from the document
+    cv = fetch_cv(doc)
+    job_title = fetch_job_title(doc)
+    profile_summary = fetch_profile_summary(doc)
 
-    # print('The cv is: ')
-    # cv = fetch_cv(doc)
-    # print(f'{cv}\n\n')
+    # Generate new content
+    new_job_title = update_job_title(keywords, job_title)
+    new_profile_summary = get_profile_summary_llm(keywords, profile_summary)
 
-    # print('The Job Title is: ')
-    # job_title = fetch_job_title(doc)
-    # print(job_title)
+    # Define text replacements as a list of tuples
+    text_updates = [
+        (job_title, new_job_title),
+        (profile_summary, new_profile_summary)
+    ]
 
-    # print('the new job title is: ')
-    # new_job_title = update_job_title(keywords, job_title)
-    # print(new_job_title)
-
-    update_resume_new_title()
+    # Loop over updates to apply them dynamically
+    for existing_text, new_text in text_updates:
+        update_resume_text(
+            existing_text=existing_text,
+            new_text=new_text,
+            document_id=UPDATED_DOC_ID,
+            service=service
+        )
 
 
 

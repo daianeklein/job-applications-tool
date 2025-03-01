@@ -20,12 +20,12 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 if not OPENAI_API_KEY:
-    raise ValueError('Open AI Key not found')
+    raise ValueError('OPENAI API KEY NOT FOUND')
 
 # Initialize OpenAI Chat Model
 llm = ChatOpenAI(model_name='gpt-4o', openai_api_key=OPENAI_API_KEY)
 
-def extract_keywords(prompt: str) -> str:
+def extract_keywords(prompt: str, job_description:str) -> str:
     """
     Calls OpenAI LLM using LangChain to extract keywords from a job description.
 
@@ -36,13 +36,13 @@ def extract_keywords(prompt: str) -> str:
         str: Extracted keywords.
     """
     messages = [
-        SystemMessage(content=p_extract_keywords),
-        HumanMessage(content=prompt)  
+        SystemMessage(content=prompt),
+        HumanMessage(content=job_description)  
     ]
 
     response = llm.invoke(messages)
     return response.content.strip()
 
 if __name__ == '__main__':
-    keywords = extract_keywords(job_description_text)
+    keywords = extract_keywords(p_extract_keywords, job_description_text)
     print("\nExtracted Keywords:\n", keywords)

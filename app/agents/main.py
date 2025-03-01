@@ -22,11 +22,13 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 SERVICE_ACCOUNT_FILE = '/Users/daianeklein/Documents/DS/job-applications-tool/h.json'
-SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/documents",
+          "https://www.googleapis.com/auth/drive"]
 creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-service = build('docs', 'v1', credentials=creds)
+docs_service = build('docs', 'v1', credentials=creds)
+drive_service = build('drive', 'v3', credentials=creds)
 DOCUMENT_ID = '1pXc4nsuFd5RfQFWimmKaLMxucWiV7WLZDCtP18wbCTE'
-doc = service.documents().get(documentId=DOCUMENT_ID).execute()
+doc = docs_service.documents().get(documentId=DOCUMENT_ID).execute()
 
 ########### OPEN AI
 load_dotenv()
@@ -74,10 +76,8 @@ def extract_keywords(prompt: str, job_description:str) -> str:
 
 ############################ JOB TITLE ############################
 
-def fetch_job_title(resume:str) -> str:
-    """Fetches the job title from the CV document in Google Docs."""
-    doc = service.documents().get(documentId=DOCUMENT_ID).execute()
-    
+def fetch_job_title(doc:str) -> str:
+    """Fetches the job title from the CV document in Google Docs."""    
     content = doc.get("body", {}).get("content", [])
     
     job_title = None

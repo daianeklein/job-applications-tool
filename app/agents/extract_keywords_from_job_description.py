@@ -12,36 +12,37 @@ parent_dir = current_dir.parent
 prompts_dir = parent_dir / "prompts"
 sys.path.insert(0, str(prompts_dir))
 
-from extract_keywords import extract_keywords_prompt
+from prompt_extract_keywords import p_extract_keywords
 from job_description import job_description_text
 
+# Load OpenAI API Key
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 if not OPENAI_API_KEY:
     raise ValueError('Open AI Key not found')
 
+# Initialize OpenAI Chat Model
 llm = ChatOpenAI(model_name='gpt-4o', openai_api_key=OPENAI_API_KEY)
 
-def call_openai(prompt:str) -> str:
+def extract_keywords(prompt: str) -> str:
     """
-    Calls OpenAI LLM using LangChain.
-    
+    Calls OpenAI LLM using LangChain to extract keywords from a job description.
+
     Args:
-        prompt (str): The text prompt to send to the model.
+        prompt (str): The job description text.
 
     Returns:
-        str: The response from the OpenAI model.
+        str: Extracted keywords.
     """
     messages = [
-        SystemMessage(content=extract_keywords_prompt),
+        SystemMessage(content=p_extract_keywords),
         HumanMessage(content=prompt)  
     ]
 
-    # response = llm(messages)
     response = llm.invoke(messages)
     return response.content.strip()
 
 if __name__ == '__main__':
-    response = call_openai(job_description_text)
-    print("\nOpenAI Response:\n", response)
+    keywords = extract_keywords(job_description_text)
+    print("\nExtracted Keywords:\n", keywords)

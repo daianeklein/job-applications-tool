@@ -262,10 +262,7 @@ def update_resume_text(existing_text: str, new_text: str, document_id: str, serv
         print(f"Text '{existing_text}' not found in the document.")
 
 
-
-############################################################################
-
-if __name__ == '__main__':
+def main():
     # Extract keywords from job description
     keywords = extract_keywords(p_extract_keywords, job_description_text)
     
@@ -297,4 +294,8 @@ if __name__ == '__main__':
             document_id=UPDATED_DOC_ID,
             service=service
         )
+############################################################################
+
+if __name__ == '__main__':
+    main()
 

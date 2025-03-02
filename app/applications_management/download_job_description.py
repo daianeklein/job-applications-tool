@@ -56,7 +56,7 @@ def save_job_description_as_pdf(job_description, pdf_filename):
 
     print(f"PDF saved successfully as '{pdf_filename}.pdf'")
 
-if __name__ == "__main__":
+def main():
     # Get last ID from 'companies2'
     last_id = get_last_id()
 
@@ -65,3 +65,6 @@ if __name__ == "__main__":
         save_job_description_as_pdf(job_description_text, pdf_filename)
     else:
         print("No ID found in 'companies'.")
+
+if __name__ == "__main__":
+    main()

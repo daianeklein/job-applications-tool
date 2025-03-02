@@ -38,8 +38,6 @@ def extract_job_info(prompt: str, job_description: str) -> dict:
 
     return extracted_data
 
-
-
 if __name__ == "__main__":
     job_info = extract_job_info(extract_role_information_p, job_description_text)
     print(job_info)

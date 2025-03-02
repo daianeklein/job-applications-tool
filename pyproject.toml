@@ -17,6 +17,12 @@ google-auth-oauthlib = "^1.2.1"
 google-auth-httplib2 = "^0.2.0"
 google-api-python-client = "^2.162.0"
 notebook = "^7.3.2"
+pdfkit = "^1.0.0"
+weasyprint = "^64.1"
+reportlab = "^4.3.1"
+gspread = "^6.2.0"
+matplotlib = "^3.10.1"
+fpdf = "^1.7.2"
 
 
 [tool.poetry.group.dev.dependencies]

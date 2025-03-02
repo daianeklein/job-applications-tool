@@ -1,34 +1,27 @@
 job_description_text = """
-Full job description
-We are looking for a talented and passionate Dancer to join our team. The ideal candidate will have a strong background in dance and be able to perform a variety of styles. We are looking for someone who is creative, energetic and motivated to perform at the highest level. The successful candidate will be expected to attend rehearsals, participate in performances, and work closely with the choreographer to create innovative and exciting routines.
+About the job
+Somos o PAN
 
-Responsibilities:
+Ágeis, flexíveis e criativos, exploramos possibilidades com disposição e desejo de fazer acontecer. Sempre prontos para encarar novos desafios, nutrimos líderes que, além de ter garra, são abertos e empáticos, veem na proximidade das relações, o elo entre cada um.
 
-Possess a strong technical foundation in various dance styles.
-Be able to learn and retain choreography quickly.
-Have the ability to adapt to different styles of movement.
-Demonstrate an understanding of musicality and timing.
-Have a strong sense of body awareness and control.
-Be able to work as part of a team and take direction from a choreographer.
-Job Type: Contract
+Nossa missão, se faz cumprida quando transformamos a vida dos outros através dos nossos conhecimentos. Nossos pilares de cultura, reforçam nossa postura idealizadora e com desejo de fazer acontecer: Trabalho em equipe, Ousadia empreendedora e Protagonismo com profundidade.
 
-Benefits:
+Dominamos nossos processos e trazemos melhorias para quem deseja ter uma vida financeira mais inteligente.
 
-Flexible schedule
-Schedule:
+Essa oportunidade é para atuar em uma empresa que faz parte do Grupo PAN.
 
-Choose your own hours
-On call
-Weekends as needed
-License/Certification:
+Principais desafios:
 
-Driver's License (Required)
-Shift availability:
+Desenvolver e otimizar dashboards para visualização de dados;
+Analisar grandes volumes de dados e gerar insights estratégicos;
+Utilizar SQL para manipulação e extração de dados;
+Atuar como ponte entre áreas de negócio e tecnologia, garantindo soluções assertivas;
+Ter familiaridade com AWS ou outras plataformas de cloud para análise de dados. 
 
-Day Shift (Preferred)
-Night Shift (Preferred)
-Overnight Shift (Preferred)
-Willingness to travel:
+Quais as principais competências para a posição?
 
-100% (Preferred)
-Work Location: In person"""
+ Experiência sólida na criação de dashboards e visualização de dados;
+Domínio de SQL (obrigatório);
+Capacidade analítica para traduzir dados em insights estratégicos;
+Experiência em interações entre negócio e tecnologia;
+Conhecimento básico ou intermediário em AWS ou outras clouds. """

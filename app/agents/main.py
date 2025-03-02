@@ -17,6 +17,7 @@ from prompt_extract_keywords import p_extract_keywords
 from job_description import job_description_text
 from prompt_update_job_title import update_job_title_p
 from prompt_update_profile_summary import update_profile_summary_p
+from prompt_update_professional_skills import update_professional_skills_p
 
 ########### GOOGLE API 
 from google.oauth2 import service_account
@@ -180,6 +181,35 @@ def get_profile_summary_llm(keywords:str, profile_summary:str) -> str:
     return response.content.strip()
 
 
+############################################################################
+
+############################ PROFESSIONAL SKILLS ############################
+
+
+def fetch_professional_skills(doc:str) -> str:
+    content = doc.get("body", {}).get("content", [])
+    
+    professional_skills = None
+    paragraph_count = 0  # Track which paragraph we're processing
+
+    for element in content:
+        if "paragraph" in element:
+            paragraph_count += 1  # Increment for each paragraph
+            
+            if paragraph_count == 9:
+                professional_skills = element["paragraph"]["elements"][-1]['textRun']['content']
+
+    return professional_skills.strip()
+
+def get_professional_skills_llm(keywords:str, professional_skills:str) -> str:
+    messages = [
+        SystemMessage(content=update_professional_skills_p),
+        HumanMessage(content=keywords),
+        HumanMessage(content=professional_skills)
+    ]
+
+    response = llm.invoke(messages)
+    return response.content.strip()
 
 ############################################################################
 
@@ -243,15 +273,20 @@ if __name__ == '__main__':
     cv = fetch_cv(doc)
     job_title = fetch_job_title(doc)
     profile_summary = fetch_profile_summary(doc)
+    professional_skills = fetch_professional_skills(doc)
+    print(f'\nThe professional_skills is {professional_skills}\n')
 
     # Generate new content
-    new_job_title = update_job_title(keywords, job_title)
-    new_profile_summary = get_profile_summary_llm(keywords, profile_summary)
+    new_job_title = update_job_title(keywords, job_title) #job title
+    new_profile_summary = get_profile_summary_llm(keywords, profile_summary) #profile summary
+    new_professional_skills = get_professional_skills_llm(keywords, professional_skills) #professional skills
+    print(f'\nnew_professional_skills {new_professional_skills}\n')
 
     # Define text replacements as a list of tuples
     text_updates = [
         (job_title, new_job_title),
-        (profile_summary, new_profile_summary)
+        (profile_summary, new_profile_summary),
+        (professional_skills, new_professional_skills)
     ]
 
     # Loop over updates to apply them dynamically
@@ -262,6 +297,4 @@ if __name__ == '__main__':
             document_id=UPDATED_DOC_ID,
             service=service
         )
-
-
 

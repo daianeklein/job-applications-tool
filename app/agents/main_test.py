@@ -124,24 +124,23 @@ def replace_fields(old_text, new_text):
 
     service.documents().batchUpdate(documentId=DOCUMENT_ID, body={"requests": requests}).execute()
 
+############################################################################
+
 def main():
-#     # Extract keywords from job description
-    print('\nkeywords:')
     keywords = extract_keywords(p_extract_keywords, job_description_text)
-    print(keywords)
-    
-    # Fetch necessary sections from the document
+
     cv = fetch_cv(doc)
     job_title = fetch_job_title(doc)
-    print(f'old job title: {job_title}')
-    # profile_summary = fetch_profile_summary(doc)
-    # professional_skills = fetch_professional_skills(doc)
+    profile_summary = fetch_profile_summary(doc)
+    professional_skills = fetch_professional_skills(doc)
 
     new_job_title = update_cv_fields(keywords, update_job_title_p, cv)
-    print(f'new job title: {new_job_title}')
-    replace_fields(job_title, new_job_title )
-
-############################################################################
+    new_profile_summary = update_cv_fields(keywords, update_profile_summary_p, cv)
+    new_professional_skills = update_cv_fields(keywords, update_professional_skills_p, cv)
+    
+    replace_fields(job_title, new_job_title)
+    replace_fields(profile_summary, new_profile_summary)
+    replace_fields(professional_skills, new_professional_skills)
 
 if __name__ == '__main__':
     main()

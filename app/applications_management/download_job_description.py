@@ -12,6 +12,8 @@ sys.path.insert(0, str(parent_dir / "agents"))  # Add agents folder to path
 sys.path.insert(0, str(parent_dir / "prompts"))  # Add prompts folder to path
 from job_description import job_description_text
 
+from clean_docstring import clean_docstring
+
 ########### GOOGLE SHEETS API ###########
 SERVICE_ACCOUNT_FILE = "/Users/daianeklein/Documents/DS/job-applications-tool/h.json"
 SPREADSHEET_ID = "1sBj_w8vevulAZmLfLz_mj6CMTl9VA942zfwJ-KF1Dxc"
@@ -62,7 +64,7 @@ def main():
 
     if last_id:
         pdf_filename = f"{last_id}.pdf"
-        save_job_description_as_pdf(job_description_text, pdf_filename)
+        save_job_description_as_pdf(clean_docstring(job_description_text), pdf_filename)
     else:
         print("No ID found in 'companies'.")
 

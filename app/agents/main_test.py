@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from pathlib import Path
+from langdetect import detect
 
 ########### PROMPTS
 # Define paths
@@ -27,8 +28,18 @@ SERVICE_ACCOUNT_FILE = '/Users/daianeklein/Documents/DS/job-applications-tool/h.
 SCOPES = ["https://www.googleapis.com/auth/documents"]
 creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 service = build('docs', 'v1', credentials=creds)
-DOCUMENT_ID = '1pXc4nsuFd5RfQFWimmKaLMxucWiV7WLZDCtP18wbCTE'
+
+# Detect job description language
+job_lang = detect(job_description_text)
+if job_lang == 'pt':
+    DOCUMENT_ID = '1dQbQJZ38b-570-7_Rwgcl6HOPS5vE6-hWhDXAU-NmlM'
+else:
+    DOCUMENT_ID = '1pXc4nsuFd5RfQFWimmKaLMxucWiV7WLZDCtP18wbCTE'
+
 doc = service.documents().get(documentId=DOCUMENT_ID).execute()
+
+# DOCUMENT_ID = '1pXc4nsuFd5RfQFWimmKaLMxucWiV7WLZDCtP18wbCTE'
+# doc = service.documents().get(documentId=DOCUMENT_ID).execute()
 
 
 ########### OPEN AI
@@ -84,8 +95,12 @@ def extract_keywords(prompt: str, job_description:str) -> str:
     Returns:
         str: Extracted keywords.
     """
+
+    language_instruction = "Responda em português." if job_lang == 'pt' else "Reply in English."
+
+
     messages = [
-        SystemMessage(content=prompt),
+        SystemMessage(content=f"{prompt}\n\n{language_instruction}"),
         HumanMessage(content=job_description)  
     ]
 
@@ -95,9 +110,11 @@ def extract_keywords(prompt: str, job_description:str) -> str:
 ############################ UPDATE USING LLM ############################
 
 def update_cv_fields(keywords:str, prompt: str, doc:str) -> str:
-    
+
+    language_instruction = "Responda em português." if job_lang == 'pt' else "Reply in English."
+
     messages = [
-        SystemMessage(content=prompt),
+        SystemMessage(content=f"{prompt}\n\n{language_instruction}"),
         HumanMessage(content=keywords),
         HumanMessage(content=doc),
     ]
@@ -109,7 +126,6 @@ def update_cv_fields(keywords:str, prompt: str, doc:str) -> str:
 
 
 def replace_fields(old_text, new_text):
-    print(f'old text is {old_text} and new text is {new_text}')
     requests = [
         {
             "replaceAllText": {

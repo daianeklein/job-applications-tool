@@ -2304,6 +2304,20 @@ files = [
 langchain-core = ">=0.3.34,<1.0.0"
 
 [[package]]
+name = "langdetect"
+version = "1.0.9"
+description = "Language detection library ported from Google's language-detection."
+optional = false
+python-versions = "*"
+files = [
+    {file = "langdetect-1.0.9-py2-none-any.whl", hash = "sha256:7cbc0746252f19e76f77c0b1690aadf01963be835ef0cd4b56dddf2a8f1dfc2a"},
+    {file = "langdetect-1.0.9.tar.gz", hash = "sha256:cbc1fef89f8d062739774bd51eda3da3274006b3661d199c2655f6b3f6d605a0"},
+]
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "langsmith"
 version = "0.3.11"
 description = "Client library to connect to the LangSmith LLM Tracing and Evaluation Platform."
@@ -5068,4 +5082,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0a34ea513540848c9dbbf1cec6f0b12dec1d13f7893dc0eb593473936db4031d"
+content-hash = "eb789d7dc05fa6479d5fb1689d03dcc8b7e8bd44bdd112c87b56a09d793bc6d5"

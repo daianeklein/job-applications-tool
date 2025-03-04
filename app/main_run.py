@@ -12,7 +12,7 @@ sys.path.insert(0, str(current_dir / "agents"))
 sys.path.insert(0, str(current_dir / "applications_management"))
 sys.path.insert(0, str(current_dir / "prompts"))
 
-from agents.main import main 
+from agents.main_test import main 
 from applications_management import update_spreadsheet, download_job_description
 
 if __name__ == '__main__':

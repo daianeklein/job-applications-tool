@@ -6,6 +6,8 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from pathlib import Path
 from langdetect import detect
+import tkinter as tk
+from tkinter import ttk
 
 ########### PROMPTS
 # Define paths
@@ -140,7 +142,70 @@ def replace_fields(old_text, new_text):
 
     service.documents().batchUpdate(documentId=DOCUMENT_ID, body={"requests": requests}).execute()
 
-############################################################################
+def show_edit_dialog(field_name: str, current_value: str, new_value: str) -> str:
+    """
+    Shows a dialog window for the user to review and optionally edit the new value.
+    
+    Args:
+        field_name (str): Name of the field being edited (e.g., "Job Title")
+        current_value (str): The current value in the document
+        new_value (str): The LLM-generated new value
+        
+    Returns:
+        str: The final value to use (either the LLM-generated value or user-modified value)
+    """
+    # Create the dialog window
+    dialog = tk.Tk()
+    dialog.title(f"Review {field_name}")
+    dialog.geometry("600x400")
+    
+    # Create and pack the widgets
+    tk.Label(dialog, text=f"Current {field_name}:", font=("Arial", 10, "bold")).pack(pady=5)
+    tk.Label(dialog, text=current_value).pack(pady=5)
+    
+    tk.Label(dialog, text=f"Suggested {field_name}:", font=("Arial", 10, "bold")).pack(pady=5)
+    tk.Label(dialog, text=new_value).pack(pady=5)
+    
+    tk.Label(dialog, text="Edit if needed:", font=("Arial", 10, "bold")).pack(pady=5)
+    edit_field = ttk.Entry(dialog, width=50)
+    edit_field.insert(0, new_value)
+    edit_field.pack(pady=10)
+    
+    # Variable to store the result
+    result = {"value": new_value}
+    
+    def on_accept():
+        result["value"] = edit_field.get()
+        dialog.destroy()
+    
+    def on_cancel():
+        result["value"] = current_value
+        dialog.destroy()
+    
+    # Create buttons
+    button_frame = ttk.Frame(dialog)
+    button_frame.pack(pady=20)
+    
+    ttk.Button(button_frame, text="Accept", command=on_accept).pack(side=tk.LEFT, padx=10)
+    ttk.Button(button_frame, text="Cancel", command=on_cancel).pack(side=tk.LEFT)
+    
+    # Run the dialog
+    dialog.mainloop()
+    
+    return result["value"]
+
+def update_with_confirmation(old_text: str, new_text: str, field_name: str) -> None:
+    """
+    Updates a field in the document after getting user confirmation/modification.
+    
+    Args:
+        old_text (str): The current text in the document
+        new_text (str): The LLM-generated new text
+        field_name (str): Name of the field being updated
+    """
+    final_text = show_edit_dialog(field_name, old_text, new_text)
+    if final_text != old_text:  # Only update if the text has changed
+        replace_fields(old_text, final_text)
 
 def main():
     keywords = extract_keywords(p_extract_keywords, job_description_text)
@@ -154,9 +219,9 @@ def main():
     new_profile_summary = update_cv_fields(keywords, update_profile_summary_p, cv)
     new_professional_skills = update_cv_fields(keywords, update_professional_skills_p, cv)
     
-    replace_fields(job_title, new_job_title)
-    replace_fields(profile_summary, new_profile_summary)
-    replace_fields(professional_skills, new_professional_skills)
+    update_with_confirmation(job_title, new_job_title, "Job Title")
+    update_with_confirmation(profile_summary, new_profile_summary, "Profile Summary")
+    update_with_confirmation(professional_skills, new_professional_skills, "Professional Skills")
 
 if __name__ == '__main__':
     main()

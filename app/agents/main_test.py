@@ -157,25 +157,25 @@ def show_edit_dialog(field_name: str, current_value: str, new_value: str) -> str
     # Create the dialog window
     dialog = tk.Tk()
     dialog.title(f"Review {field_name}")
-    dialog.geometry("600x400")
+    dialog.geometry("1000x600")
     
     # Create and pack the widgets
     tk.Label(dialog, text=f"Current {field_name}:", font=("Arial", 10, "bold")).pack(pady=5)
-    tk.Label(dialog, text=current_value).pack(pady=5)
+    tk.Label(dialog, wraplength=500,text=current_value).pack(pady=5)
     
     tk.Label(dialog, text=f"Suggested {field_name}:", font=("Arial", 10, "bold")).pack(pady=5)
-    tk.Label(dialog, text=new_value).pack(pady=5)
+    tk.Label(dialog, wraplength=500, text=new_value).pack(pady=5)
     
     tk.Label(dialog, text="Edit if needed:", font=("Arial", 10, "bold")).pack(pady=5)
-    edit_field = ttk.Entry(dialog, width=50)
-    edit_field.insert(0, new_value)
+    edit_field = tk.Text(dialog, width=80, height=15)
+    edit_field.insert("1.0", new_value)
     edit_field.pack(pady=10)
     
     # Variable to store the result
     result = {"value": new_value}
     
     def on_accept():
-        result["value"] = edit_field.get()
+        result["value"] = edit_field.get("1.0", "end-1c").strip()
         dialog.destroy()
     
     def on_cancel():

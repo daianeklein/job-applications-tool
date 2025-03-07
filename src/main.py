@@ -8,6 +8,21 @@ from prompts.prompt_update_professional_skills import update_professional_skills
 from prompts.job_description import job_description_text
 from langdetect import detect
 
+###################################################################################################
+import sys
+import os
+from pathlib import Path
+
+# Get the current directory of main.py
+current_dir = Path(__file__).resolve().parent
+root_dir = current_dir.parent
+
+# Add the necessary directories to sys.path
+sys.path.insert(0, str(current_dir / "applications_management"))
+from applications_management import update_spreadsheet, download_job_description
+
+###################################################################################################
+
 def get_language_instruction(text):
     """Determines the language instruction based on detected language."""
     lang = detect(text)
@@ -41,6 +56,9 @@ def main():
     final_professional_skills = ui.show_edit_dialog("Professional Skills", professional_skills, new_professional_skills)
     if final_professional_skills != professional_skills:
         text_processing.doc_service.replace_fields(professional_skills, final_professional_skills)
+
+    update_spreadsheet.add_job_info_to_sheet()
+    download_job_description.main()
 
 if __name__ == "__main__":
     main()

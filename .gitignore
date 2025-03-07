@@ -176,3 +176,9 @@ cython_debug/
 #keys
 g.json
 h.json
+
+#exported files
+*.pdf
+
+#job description
+job_description.py

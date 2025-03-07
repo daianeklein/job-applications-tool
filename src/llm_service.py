@@ -14,12 +14,18 @@ class LLMService:
         response = self.llm.invoke(messages)
         return response.content.strip()
 
-    def update_cv_fields(self, keywords: str, prompt: str, document: str, language_instruction: str) -> str:
+    def update_cv_fields(self, keywords: str, prompt: str, current_content: str, language_instruction: str) -> str:        
+        formatted_input = f"""Keywords from Job Description:
+{keywords}
+
+Current Content:
+{current_content}"""
+
         messages = [
             SystemMessage(content=f"{prompt}\n\n{language_instruction}"),
-            HumanMessage(content=keywords),
-            HumanMessage(content=document),
+            HumanMessage(content=formatted_input)
         ]
+        
         response = self.llm.invoke(messages)
-        print(f'Update cv fields: {response.content}')
+        print(f'LLM Response: {response.content}')
         return response.content.strip() if response else ""

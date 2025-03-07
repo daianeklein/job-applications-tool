@@ -1,6 +1,6 @@
-from src.llm_service import LLMService
-from src.text_processing import TextProcessing
-from src.user_interface import UserInterface
+from llm_service import LLMService
+from text_processing import TextProcessing
+from user_interface import UserInterface
 from prompts.prompt_extract_keywords import p_extract_keywords
 from prompts.prompt_update_job_title import update_job_title_p
 from prompts.prompt_update_profile_summary import update_profile_summary_p
@@ -22,9 +22,18 @@ def main():
     new_profile_summary = llm_service.update_cv_fields(keywords, update_profile_summary_p, profile_summary, "Reply in English.")
     new_professional_skills = llm_service.update_cv_fields(keywords, update_professional_skills_p, professional_skills, "Reply in English.")
 
-    ui.show_edit_dialog("Job Title", job_title, new_job_title)
-    ui.show_edit_dialog("Profile Summary", profile_summary, new_profile_summary)
-    ui.show_edit_dialog("Professional Skills", professional_skills, new_professional_skills)
+    # Show dialogs and save changes
+    final_job_title = ui.show_edit_dialog("Job Title", job_title, new_job_title)
+    if final_job_title != job_title:
+        text_processing.doc_service.replace_fields(job_title, final_job_title)
+
+    final_profile_summary = ui.show_edit_dialog("Profile Summary", profile_summary, new_profile_summary)
+    if final_profile_summary != profile_summary:
+        text_processing.doc_service.replace_fields(profile_summary, final_profile_summary)
+
+    final_professional_skills = ui.show_edit_dialog("Professional Skills", professional_skills, new_professional_skills)
+    if final_professional_skills != professional_skills:
+        text_processing.doc_service.replace_fields(professional_skills, final_professional_skills)
 
 if __name__ == "__main__":
     main()

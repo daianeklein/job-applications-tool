@@ -1,4 +1,4 @@
-from src.google_docs_service import GoogleDocsService
+from google_docs_service import GoogleDocsService
 
 class TextProcessing:
     def __init__(self):

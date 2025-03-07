@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
-from src.config import OPENAI_API_KEY
+from config import OPENAI_API_KEY
 
 class LLMService:
     def __init__(self, model_name="gpt-4o"):
@@ -21,4 +21,5 @@ class LLMService:
             HumanMessage(content=document),
         ]
         response = self.llm.invoke(messages)
+        print(f'Update cv fields: {response.content}')
         return response.content.strip() if response else ""

@@ -16,22 +16,30 @@ class GoogleDocsService:
             else "1pXc4nsuFd5RfQFWimmKaLMxucWiV7WLZDCtP18wbCTE"
         )
 
-    def fetch_cv(self):
-        doc = self.service.documents().get(documentId=self.document_id).execute()
-        text = []
-        for element in doc.get("body", {}).get("content", []):
-            if "paragraph" in element:
-                for paragraph_element in element["paragraph"]["elements"]:
-                    if "textRun" in paragraph_element:
-                        text.append(paragraph_element["textRun"]["content"])
-        return "".join(text)
+    def get_document(self):
+        """Fetches the entire Google Doc content."""
+        return self.service.documents().get(documentId=self.document_id).execute()
 
-    def fetch_field(self, index: int):
-        doc = self.service.documents().get(documentId=self.document_id).execute()
+    def fetch_job_title(self):
+        """Extracts job title from Google Docs."""
+        doc = self.get_document()
         content = doc.get("body", {}).get("content", [])
-        return content[index]["paragraph"]["elements"][0]["textRun"]["content"].strip()
+        return content[2]["paragraph"]["elements"][0]["textRun"]["content"].strip() if content else ""
+
+    def fetch_profile_summary(self):
+        """Extracts profile summary from Google Docs."""
+        doc = self.get_document()
+        content = doc.get("body", {}).get("content", [])
+        return content[6]["paragraph"]["elements"][0]["textRun"]["content"].strip() if content else ""
+
+    def fetch_professional_skills(self):
+        """Extracts professional skills from Google Docs."""
+        doc = self.get_document()
+        content = doc.get("body", {}).get("content", [])
+        return content[9]["paragraph"]["elements"][2]["textRun"]["content"].strip() if content else ""
 
     def replace_fields(self, old_text, new_text):
+        """Replaces a field's text in Google Docs."""
         requests = [
             {
                 "replaceAllText": {

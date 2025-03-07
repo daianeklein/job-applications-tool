@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
-from config import OPENAI_API_KEY
+from src.config import OPENAI_API_KEY
 
 class LLMService:
     def __init__(self, model_name="gpt-4o"):
